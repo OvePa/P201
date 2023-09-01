@@ -1,0 +1,45 @@
+re.A / re.ASCII
+The ASCII flag tells Python to only match against ASCII instead of using full
+Unicode matching when coupled with the following escape codes: w, W, b, B, d, D, s and S.
+There is a re.U / re.UNICODE flag too that is for backward compatibility purposes;
+however, those flags are redundant since Python 3 already matches Unicode by default.
+
+re.DEBUG
+This will display debug information about our compiled expression.
+
+re.I / re.IGNORECASE
+If we’d like to perform case-insensitive matching, then this is the flag for us.
+If our expression was [a-z] and we compiled it with this flag, our pattern will
+also match uppercase letters too! This also works for Unicode, and it’s not affected
+by the current locale.
+
+re.L / re.LOCALE
+Make the escape codes: w, W, b, B, d, D, s and S depending on the current locale.
+However, the documentation says that we should not depend on this flag because the
+locale mechanism itself is very unreliable. Instead, just use Unicode matching.
+The documentation goes on to state that this flag really only makes sense for bytes patterns.
+
+re.M / re.MULTILINE
+When we use this flag, we are telling Python to make the ^ pattern character match at
+both the beginning of the string and at the beginning of each line. It also tells
+Python that ＄ should match at the end of the string and the end of each line,
+which is subtly different from their defaults.
+
+re.S / re.DOTALL
+This fun flag will make the . (period) metacharacter match any character at all.
+Without the flag, it would match anything except a newline.
+
+re.X / re.VERBOSE
+If we find our regular expressions hard to read, then this flag is just what we need.
+It will allow us to visually separate logical sections of our regular expressions
+and even add comments! Whitespace within the pattern will be ignored except
+when in a character class or when the whitespace is preceded by an unescaped backslash.
+
+Overview of backlashes
+Backslashes are a bit complicated in Python’s regular expressions. The reason is that
+regular expressions use backslashes to indicate special forms or to allow a special
+character to be searched for instead of invoking it, such as when we want to search
+for a dollar sign: ＄. If we don’t use backslash with dollar sign, we’d just be
+creating an anchor. The issue comes in because Python uses the backslash character
+for the same thing in literal strings. Let’s say we want to search for a string like
+this (minus the quotes): “python”.
