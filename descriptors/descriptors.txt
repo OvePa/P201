@@ -1,0 +1,63 @@
+Descriptors in Python and its Protocol
+
+->vOverview of descriptors
+Descriptors were introduced in Python way back in version 2.2. They provide the
+developer ability to add managed attributes to objects. The methods needed to
+create a descriptor are __get__, __set__ and __delete__. If we define any of
+these methods, then we have created a descriptor.
+
+The idea behind the descriptor is to get, set or delete attributes from our
+object’s dictionary. When we access a class attribute, this starts the lookup chain.
+When we access a class attribute, this starts the lookup chain. The looked up
+value should be an object with one of our descriptor methods defined, then the
+descriptor method will be invoked.
+
+Descriptors power a lot of the magic of Python’s internals. They are what make
+properties, methods and even the super function work. They are also used to
+implement the new style classes that were also introduced in Python 2.2.
+
+
+-> What are the descriptors’ protocols?#
+The protocol to create a descriptor is really quite easy. We only need to define one or more of the following:
+
+-> __get__ (self, obj, type=None), returns value
+-> __set__ (self, obj, value), returns None
+-> __delete__ (self, obj), returns None
+
+Once we’ve defined at least one, we have created a descriptor. If we can define
+both __get__ and __set__, we will have created a data descriptor. A descriptor
+with only __get__() defined is known as non-data descriptors and is usually used
+for methods. The reason for this distinction in descriptor types is that if an
+instance’s dictionary happens to have a data descriptor, the descriptor will
+take precedence during the lookup. If the instance’s dictionary has an entry
+that matches up with a non-data descriptor, then the dictionary’s own entry will
+take precedence over the descriptor.
+
+We can also create a read-only descriptor if we define both __get__ and __set__,
+but raise an AttributeError when the __set__ method is called.
+
+-> How descriptor can be called
+The most common method of calling a descriptor is for the descriptor to be invoked
+automatically when we access an attribute. A typical example would be
+my_obj.attribute_name. This will cause our object to look up attribute_name in
+the my_obj object. If our attribute_name happens to define __get__(),
+then attribute_name.__get__(my_obj) will get called. This all depends on whether
+our instance is an object or a class.
+
+The magic behind this lies in the magic method known as __getattribute__,
+which will turn my_obj.a into this: type(my_obj).__dict__['a'].__get__(a, type(a)).
+We can read all about the implementation in Python’s documentation.
+
+According to said documentation, there are a few points to keep in mind in regards
+to calling a descriptor:
+
+* The descriptor is invoked via the default implementation of the __getattribute__ method.
+* If we override __getattribute__, this will prevent the descriptor from getting
+  automatically called.
+* object.__getattribute__() and type.__getattribute__() don’t call __get__() the same way.
+* A data descriptor will always, ALWAYS override instance dictionaries.
+* The non-data descriptor can be overridden by instance dictionaries.
+
+More information on how all this works can be found in Python’s data model,
+the Python source code and in Guido van Rossum’s document, “Unifying types and
+class in Python”.
